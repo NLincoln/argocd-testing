@@ -1,0 +1,84 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app
+  labels:
+    app: demo-app
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: demo-app
+  template:
+    metadata:
+      labels:
+        app: demo-app
+    spec:
+      containers:
+      - name: demo-app
+        image: 771691878004.dkr.ecr.us-east-1.amazonaws.com/demo-app:{{ .Values.tag }}
+        command:
+          - node
+          - /app/app.js
+        resources:
+          limits:
+            cpu: "1"
+            memory: 256M
+        env:
+          - name: HONEYCOMB_WRITE_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: hny-write-token
+                key: token
+        ports:
+        - name: http
+          containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgen
+  labels:
+    app: loadgen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loadgen
+  template:
+    metadata:
+      labels:
+        app: loadgen
+    spec:
+      containers:
+      - name: loadgen
+        image: 771691878004.dkr.ecr.us-east-1.amazonaws.com/demo-app:{{ .Values.tag }}
+        command:
+          - node
+          - /app/make-some-noise.js
+        resources:
+          limits:
+            cpu: "1"
+            memory: 256M
+        env:
+          - name: HONEYCOMB_WRITE_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: hny-write-token
+                key: token
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-app
+spec:
+  selector:
+    app: demo-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+
