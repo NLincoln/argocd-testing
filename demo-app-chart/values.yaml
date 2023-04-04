@@ -1,1 +1,3 @@
-tag: <+input>
+
+# 771691878004.dkr.ecr.us-east-1.amazonaws.com/demo-app:{{ .Values.tag }}
+image: <+artifact.image>

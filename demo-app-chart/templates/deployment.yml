@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: demo-app
-        image: 771691878004.dkr.ecr.us-east-1.amazonaws.com/demo-app:{{ .Values.tag }}
+        image: {{ .Values.image }}
         command:
           - node
           - /app/app.js
@@ -53,7 +53,7 @@ spec:
     spec:
       containers:
       - name: loadgen
-        image: 771691878004.dkr.ecr.us-east-1.amazonaws.com/demo-app:{{ .Values.tag }}
+        image: {{ .Values.image }}
         command:
           - node
           - /app/make-some-noise.js
